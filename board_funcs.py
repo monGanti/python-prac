@@ -13,7 +13,6 @@ def display_board(board):
     print(f'{board[3]} | {board[4]} | {board[5]}')
     print(f'{board[0]} | {board[1]} | {board[2]}')
 
-
 def player_markerTypeSelection():
     markerType = input("Please pick a marker 'X' or 'O'::")
     while ((markerType.upper() !=  'X') and (markerType.upper() != 'O')):
@@ -28,187 +27,103 @@ def player2_marker(player1MarkerType):
         player2MarkerType = 'X'
     return player2MarkerType.upper()
 
-def choose_position(board_positions,playerUsedPositionsDir):
-    position = int(input("Choose your Position :: "))
-    if position not in board_positions:
-        return "not a valid value, please make your choice only between 1-9"
-    elif position in playerUsedPositionsDir.values():
-        print( "this position already has a marker, choose another position" )
-        position = int(input("Choose your Position :: "))
-        return position
-    else:
-        return position
-
 def place_marker(position,markerType):
     board[position-1] = markerType
     display_board(board)
 
-def evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker):
+def evaluate_position(position):
+    while(position not in (board_positions and unmarkeredpostions)):
+        print("not a valid Position, please chose again")
+        position = int(input("Choose your Position :: "))
+    return position
+
+
+def evaluate_Game(player1Marker,player2Marker):
     getPlayer1List = playerUsedPositionsDir[player1Marker]
     getPlayer2List = playerUsedPositionsDir[player2Marker]
-    IsPlayer1winner = findmatch(winningList,getPlayer1List)
-    IsPlayer2winner = findmatch(winningList,getPlayer2List)
+    IsPlayer1winner = findmatch2(winningList,getPlayer1List)
+    IsPlayer2winner = findmatch2(winningList,getPlayer2List)
     if (IsPlayer1winner == True and IsPlayer2winner == False):
-        return ("PLAYER 1 is WINNER")
+        print ("PLAYER 1 is WINNER")
+        return True
     elif (IsPlayer2winner == True and IsPlayer1winner == False):
-        return ("PLAYER 2 is WINNER")
+        print ("PLAYER 2 is WINNER")
+        return True
     elif(IsPlayer1winner == False and IsPlayer2winner == False and len(unmarkeredpostions)==1):
-        return ("its a TIE")
+        print ("its a TIE")
+        return True
     else:
-        return ("game is still on")
+        print ("game is still on")
+        return False
 
-def findmatch(nestedList1,list2):
-    #value = []
-    for num in nestedList1:
-        #value = set(num + list2)
-        if list2 in num:
-            return True
+def findmatch(winninglst,playerlst):
+    value = False
+    for num in winninglst:
+        if set(num) in set(playerlst):
+            value = True
+            break
+        else:
+            value = False
+
+    return value
+
+def findmatch2(winninglst,playerlst):
+    for num in winninglst:
+        result =  all(elem in playerlst  for elem in num)
+        if result == True:
+            break
         else:
             continue
-    return False
+    return result
 
 
 
+def game_turn_actions(playerMarker):
+    chosenPosition = int(input("Choose your Position :: "))
+    evaledPosition = evaluate_position(chosenPosition)
 
-#display the board
-display_board(board_positions)
+    # Store that position in our directory
+    unmarkeredpostions.remove(evaledPosition)
+    playerUsedPositionsDir[playerMarker].append(evaledPosition)
+    print(playerUsedPositionsDir)
+    print(unmarkeredpostions)
 
-#ask 1st player to choose a marker
-player1Marker = player_markerTypeSelection()
-
-#assign the default player with marker
-player2Marker = player2_marker(player1Marker)
-
-#revise the assigned markers for clarity
-print("Player 1 is :"+player1Marker+"\n"+"Player 2 is :"+player2Marker)
-
-#########
-#Game turn 1 : Take position from player1
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player1Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player1Marker)
-
-#########
-#Game turn 2 : Take position from player2
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player2Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player2Marker)
-
-#########
-#Game turn 3 : Take position from player1
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player1Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player1Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-
-#########
-#Game turn 4 : Take position from player2
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player2Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player2Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-
-#########
-#Game turn 5: Take position from player1
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player1Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player1Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-print(value)
-
-#########
-#Game turn 6 : Take position from player2
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player2Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player2Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-print(value)
-
-#########
-#Game turn 7: Take position from player1
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player1Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player1Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-print(value)
-
-#########
-#Game turn 8 : Take position from player2
-positionIs = choose_position(board_positions,playerUsedPositionsDir)
-
-# Store that position in our directory
-unmarkeredpostions.remove(positionIs)
-playerUsedPositionsDir[player2Marker].append(positionIs)
-print(playerUsedPositionsDir)
-print(unmarkeredpostions)
-
-# Show the board now
-place_marker(positionIs,player2Marker)
-
-#evaluate
-value = evaluate_Game(playerUsedPositionsDir,player1Marker,player2Marker)
-print(value)
+    # Show the board now
+    place_marker(evaledPosition,playerMarker)
 
 
+def  tic_tac_toe():
+    i = 1
+    finalResult = False
+    #display the board
+    display_board(board_positions)
+
+    #ask 1st player to choose a marker
+    player1Marker = player_markerTypeSelection()
+
+    #assign the default player with marker
+    player2Marker = player2_marker(player1Marker)
+
+    #revise the assigned markers for clarity
+    print("Player 1 is :"+player1Marker+"\n"+"Player 2 is :"+player2Marker)
+
+    while ((i < 9) and finalResult == False):
+
+        if (i%2 != 0):
+            # Player 1' s turn
+            game_turn_actions(player1Marker)
+
+            #evaluate
+            finalResult = evaluate_Game(player1Marker,player2Marker)
+
+        else:
+            #Player 2's turn
+            game_turn_actions(player2Marker)
+
+            #evaluate
+            finalResult = evaluate_Game(player1Marker,player2Marker)
+
+        i = i+1
 
 
-
+tic_tac_toe()
